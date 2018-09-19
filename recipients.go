@@ -43,7 +43,7 @@ func (r *Recipient) MarshalJSON() ([]byte, error) {
 
 // RecipientClient defines methods for interacting with Recipients
 type RecipientClient struct {
-	*Client
+	client *Client
 }
 
 // RecipientResponse is a response from operations dealing with Recipients
@@ -91,7 +91,7 @@ func (c *RecipientClient) attachIDs(resp *RecipientResponse, recipients []*Recip
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Add-Multiple-Recipients-POST
 func (c *RecipientClient) Add(recipients ...*Recipient) (resp *RecipientResponse, err error) {
-	err = c.makeRequest(http.MethodPost, "/contactdb/recipients", recipients, &resp)
+	err = c.client.makeRequest(http.MethodPost, "/contactdb/recipients", recipients, &resp)
 
 	c.attachIDs(resp, recipients)
 
@@ -102,7 +102,7 @@ func (c *RecipientClient) Add(recipients ...*Recipient) (resp *RecipientResponse
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Update-Recipient-PATCH
 func (c *RecipientClient) Update(recipients ...*Recipient) (resp *RecipientResponse, err error) {
-	err = c.makeRequest(http.MethodPatch, "/contactdb/recipients", recipients, &resp)
+	err = c.client.makeRequest(http.MethodPatch, "/contactdb/recipients", recipients, &resp)
 
 	c.attachIDs(resp, recipients)
 
@@ -113,7 +113,7 @@ func (c *RecipientClient) Update(recipients ...*Recipient) (resp *RecipientRespo
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Delete-Recipient-DELETE
 func (c *RecipientClient) Delete(recipientIDs []string) error {
-	return c.makeRequest(http.MethodDelete, "/contactdb/recipients", recipientIDs, nil)
+	return c.client.makeRequest(http.MethodDelete, "/contactdb/recipients", recipientIDs, nil)
 }
 
 type listRecipientsResponse struct {
@@ -126,7 +126,7 @@ type listRecipientsResponse struct {
 func (c *RecipientClient) List(page int, pageSize int) ([]*Recipient, error) {
 	var recipients listRecipientsResponse
 
-	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/recipients?page=%d&page_size=%d", page, pageSize), nil, &recipients)
+	err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/recipients?page=%d&page_size=%d", page, pageSize), nil, &recipients)
 
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func (c *RecipientClient) List(page int, pageSize int) ([]*Recipient, error) {
 func (c *RecipientClient) Get(recipientID string) (*Recipient, error) {
 	var recipient *Recipient
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/recipients/"+recipientID, nil, &recipient)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/recipients/"+recipientID, nil, &recipient)
 
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func (c *RecipientClient) Get(recipientID string) (*Recipient, error) {
 func (c *RecipientClient) ListsForRecipient(recipientID string) ([]List, error) {
 	var lists []List
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/recipients/"+recipientID+"/lists", nil, &lists)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/recipients/"+recipientID+"/lists", nil, &lists)
 
 	if err != nil {
 		return nil, err
@@ -175,7 +175,7 @@ type recipientCountResponse struct {
 func (c *RecipientClient) BillableCount() (int, error) {
 	var recipientCount recipientCountResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/recipients/billable_count", nil, &recipientCount)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/recipients/billable_count", nil, &recipientCount)
 
 	if err != nil {
 		return -1, err
@@ -190,7 +190,7 @@ func (c *RecipientClient) BillableCount() (int, error) {
 func (c *RecipientClient) Count() (int, error) {
 	var recipientCount recipientCountResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/recipients/count", nil, &recipientCount)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/recipients/count", nil, &recipientCount)
 
 	if err != nil {
 		return -1, err
@@ -210,7 +210,7 @@ type recipientSearch struct {
 func (c *RecipientClient) SearchListWithConditions(listID int, conditions ...Condition) ([]*Recipient, error) {
 	var recipients listRecipientsResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/recipients/search", recipientSearch{ListID: listID, Conditions: conditions}, &recipients)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/recipients/search", recipientSearch{ListID: listID, Conditions: conditions}, &recipients)
 
 	if err != nil {
 		return nil, err
@@ -244,7 +244,7 @@ func (c *RecipientClient) Search(criteria ...SearchTerm) ([]*Recipient, error) {
 
 	var recipients listRecipientsResponse
 
-	err = c.makeRequest(http.MethodGet, u.String(), nil, &recipients)
+	err = c.client.makeRequest(http.MethodGet, u.String(), nil, &recipients)
 
 	if err != nil {
 		return nil, err

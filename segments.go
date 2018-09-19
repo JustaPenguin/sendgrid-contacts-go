@@ -20,7 +20,7 @@ type Condition struct {
 }
 
 type SegmentsClient struct {
-	*Client
+	client *Client
 }
 
 // Create a Segment
@@ -30,7 +30,7 @@ type SegmentsClient struct {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Create-a-Segment-POST
 func (c *SegmentsClient) Create(segment *Segment) error {
-	return c.makeRequest(http.MethodPost, "/contactdb/segments", segment, &segment)
+	return c.client.makeRequest(http.MethodPost, "/contactdb/segments", segment, &segment)
 }
 
 type listSegmentsResponse struct {
@@ -43,7 +43,7 @@ type listSegmentsResponse struct {
 func (c *SegmentsClient) List() ([]*Segment, error) {
 	var resp *listSegmentsResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/segments", nil, &resp)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/segments", nil, &resp)
 
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (c *SegmentsClient) List() ([]*Segment, error) {
 func (c *SegmentsClient) Get(segmentID uint) (*Segment, error) {
 	var segment *Segment
 
-	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/segments/%d", segmentID), nil, &segment)
+	err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/segments/%d", segmentID), nil, &segment)
 
 	if err != nil {
 		return nil, err
@@ -71,14 +71,14 @@ func (c *SegmentsClient) Get(segmentID uint) (*Segment, error) {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Update-a-Segment-PATCH
 func (c *SegmentsClient) Update(segment *Segment) error {
-	return c.makeRequest(http.MethodPatch, fmt.Sprintf("/contactdb/segments/%d", segment.ID), segment, &segment)
+	return c.client.makeRequest(http.MethodPatch, fmt.Sprintf("/contactdb/segments/%d", segment.ID), segment, &segment)
 }
 
 // Delete a Segment
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Delete-a-Segment-DELETE
 func (c *SegmentsClient) Delete(segmentID uint) error {
-	return c.makeRequest(http.MethodDelete, fmt.Sprintf("/contactdb/segments/%d", segmentID), nil, nil)
+	return c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/contactdb/segments/%d", segmentID), nil, nil)
 }
 
 // ListRecipients on a Segment
@@ -87,7 +87,7 @@ func (c *SegmentsClient) Delete(segmentID uint) error {
 func (c *SegmentsClient) ListRecipients(segmentID, pageSize, page uint) ([]*Recipient, error) {
 	var resp *listRecipientsResponse
 
-	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/segments/%d/recipients?page_size=%d&page=%d", segmentID, pageSize, page), nil, &resp)
+	err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/segments/%d/recipients?page_size=%d&page=%d", segmentID, pageSize, page), nil, &resp)
 
 	if err != nil {
 		return nil, err

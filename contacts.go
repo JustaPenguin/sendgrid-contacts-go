@@ -3,6 +3,7 @@ package contacts
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,6 +12,10 @@ import (
 const sendgridAPIv3Base = "https://api.sendgrid.com/v3"
 
 func New(apikey string) *Client {
+	if apikey == "" {
+		panic(errors.New("contacts: apikey must be set"))
+	}
+
 	return &Client{
 		APIKey:     apikey,
 		HTTPClient: http.DefaultClient,
@@ -77,17 +82,17 @@ func (c *Client) unmarshal(r io.Reader, into interface{}) error {
 }
 
 func (c *Client) Recipients() *RecipientClient {
-	return &RecipientClient{Client: c}
+	return &RecipientClient{client: c}
 }
 
 func (c *Client) Lists() *ListsClient {
-	return &ListsClient{Client: c}
+	return &ListsClient{client: c}
 }
 
 func (c *Client) Segments() *SegmentsClient {
-	return &SegmentsClient{Client: c}
+	return &SegmentsClient{client: c}
 }
 
 func (c *Client) CustomFields() *CustomFieldsClient {
-	return &CustomFieldsClient{Client: c}
+	return &CustomFieldsClient{client: c}
 }

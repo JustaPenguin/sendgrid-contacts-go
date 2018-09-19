@@ -15,14 +15,14 @@ type CustomField struct {
 
 // CustomFieldsClient provides methods for managing CustomFields.
 type CustomFieldsClient struct {
-	*Client
+	client *Client
 }
 
 // Create a Custom Field
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Create-a-Custom-Field-POST
 func (c *CustomFieldsClient) Create(field *CustomField) error {
-	return c.makeRequest(http.MethodPost, "/contactdb/custom_fields", field, &field)
+	return c.client.makeRequest(http.MethodPost, "/contactdb/custom_fields", field, &field)
 }
 
 type customFieldListResponse struct {
@@ -35,7 +35,7 @@ type customFieldListResponse struct {
 func (c *CustomFieldsClient) List() ([]*CustomField, error) {
 	var resp *customFieldListResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/custom_fields", nil, &resp)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/custom_fields", nil, &resp)
 
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (c *CustomFieldsClient) List() ([]*CustomField, error) {
 func (c *CustomFieldsClient) Get(customFieldID uint) (*CustomField, error) {
 	var field *CustomField
 
-	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/custom_fields/%d", customFieldID), nil, &field)
+	err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/custom_fields/%d", customFieldID), nil, &field)
 
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (c *CustomFieldsClient) Get(customFieldID uint) (*CustomField, error) {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Delete-a-Custom-Field-DELETE
 func (c *CustomFieldsClient) Delete(customFieldID uint) error {
-	return c.makeRequest(http.MethodDelete, fmt.Sprintf("/contactdb/custom_fields/%d", customFieldID), nil, nil)
+	return c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/contactdb/custom_fields/%d", customFieldID), nil, nil)
 }
 
 type reservedFieldsResponse struct {
@@ -76,7 +76,7 @@ type reservedFieldsResponse struct {
 func (c *CustomFieldsClient) ReservedFields() ([]*CustomField, error) {
 	var resp *reservedFieldsResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/reserved_fields", nil, &resp)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/reserved_fields", nil, &resp)
 
 	if err != nil {
 		return nil, err

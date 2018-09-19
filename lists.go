@@ -14,7 +14,7 @@ type List struct {
 
 // ListsClient provides methods for interacting with Lists.
 type ListsClient struct {
-	*Client
+	client *Client
 }
 
 // Create a List
@@ -23,7 +23,7 @@ type ListsClient struct {
 func (c *ListsClient) Create(name string) (*List, error) {
 	list := &List{Name: name}
 
-	err := c.makeRequest(http.MethodPost, "/contactdb/lists", list, &list)
+	err := c.client.makeRequest(http.MethodPost, "/contactdb/lists", list, &list)
 
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ type listListsResponse struct {
 func (c *ListsClient) List() ([]*List, error) {
 	var resp *listListsResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/lists", nil, &resp)
+	err := c.client.makeRequest(http.MethodGet, "/contactdb/lists", nil, &resp)
 
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (c *ListsClient) List() ([]*List, error) {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Delete-Multiple-lists-DELETE
 func (c *ListsClient) Delete(listIDs []uint) error {
-	return c.makeRequest(http.MethodDelete, "/contactdb/lists", listIDs, nil)
+	return c.client.makeRequest(http.MethodDelete, "/contactdb/lists", listIDs, nil)
 }
 
 // Get (Retrieve) a List
@@ -64,7 +64,7 @@ func (c *ListsClient) Delete(listIDs []uint) error {
 func (c *ListsClient) Get(listID uint) (*List, error) {
 	var list *List
 
-	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/lists/%d", listID), nil, &list)
+	err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/lists/%d", listID), nil, &list)
 
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (c *ListsClient) Get(listID uint) (*List, error) {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Update-a-List-PATCH
 func (c *ListsClient) Update(list *List) error {
-	return c.makeRequest(http.MethodPatch, fmt.Sprintf("/contactdb/lists/%d", list.ID), list, nil)
+	return c.client.makeRequest(http.MethodPatch, fmt.Sprintf("/contactdb/lists/%d", list.ID), list, nil)
 }
 
 // ListRecipients on a given List
@@ -86,7 +86,7 @@ func (c *ListsClient) Update(list *List) error {
 func (c *ListsClient) ListRecipients(listID, pageSize, pageNum uint) ([]*Recipient, error) {
 	var resp *listRecipientsResponse
 
-	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/lists/%d/recipients?page_size=%d&page=%d", listID, pageSize, pageNum), nil, &resp)
+	err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/lists/%d/recipients?page_size=%d&page=%d", listID, pageSize, pageNum), nil, &resp)
 
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (c *ListsClient) AddRecipients(listID uint, recipients []*Recipient) error 
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Add-Multiple-Recipients-to-a-List-POST
 func (c *ListsClient) AddRecipientsByIDs(listID uint, recipientIDs []string) error {
-	return c.makeRequest(http.MethodPost, fmt.Sprintf("/contactdb/lists/%d/recipients", listID), recipientIDs, nil)
+	return c.client.makeRequest(http.MethodPost, fmt.Sprintf("/contactdb/lists/%d/recipients", listID), recipientIDs, nil)
 }
 
 // DeleteRecipient from a List
@@ -126,5 +126,5 @@ func (c *ListsClient) DeleteRecipient(listID uint, recipient *Recipient) error {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Delete-a-Single-Recipient-from-a-Single-List-DELETE
 func (c *ListsClient) DeleteRecipientByID(listID uint, recipientID string) error {
-	return c.makeRequest(http.MethodDelete, fmt.Sprintf("/contactdb/lists/%d/recipients/%s", listID, recipientID), nil, nil)
+	return c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/contactdb/lists/%d/recipients/%s", listID, recipientID), nil, nil)
 }
