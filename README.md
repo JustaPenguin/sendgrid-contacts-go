@@ -9,7 +9,7 @@ import "github.com/justapenguin/sendgrid-contacts-go"
 
 // ...
 
-client := contacts.New()
+client := contacts.New("SENDGRID_APIKEY")
 
 resp, err := client.Recipients().Add(
     &Recipient{
