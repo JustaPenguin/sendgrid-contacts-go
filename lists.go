@@ -55,7 +55,7 @@ func (c *ListsClient) List() ([]*List, error) {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Delete-Multiple-lists-DELETE
 func (c *ListsClient) Delete(listIDs []uint) error {
-	return c.makeRequest(http.MethodDelete, "/contactdb/lists", listIds, nil)
+	return c.makeRequest(http.MethodDelete, "/contactdb/lists", listIDs, nil)
 }
 
 // Get (Retrieve) a List
@@ -86,7 +86,7 @@ func (c *ListsClient) Update(list *List) error {
 func (c *ListsClient) ListRecipients(listID, pageSize, pageNum uint) ([]*Recipient, error) {
 	var resp *recipientListResponse
 
-	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/lists/%d/recipients?page_size=%d&page=%d", listID, pageSize, page), nil, &resp)
+	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/lists/%d/recipients?page_size=%d&page=%d", listID, pageSize, pageNum), nil, &resp)
 
 	if err != nil {
 		return nil, err
