@@ -84,7 +84,7 @@ func (c *ListsClient) Update(list *List) error {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#List-Recipients-on-a-List-GET
 func (c *ListsClient) ListRecipients(listID, pageSize, pageNum uint) ([]*Recipient, error) {
-	var resp *recipientListResponse
+	var resp *listRecipientsResponse
 
 	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/lists/%d/recipients?page_size=%d&page=%d", listID, pageSize, pageNum), nil, &resp)
 

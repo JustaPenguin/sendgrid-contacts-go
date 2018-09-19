@@ -116,7 +116,7 @@ func (c *RecipientClient) Delete(recipientIDs []string) error {
 	return c.makeRequest(http.MethodDelete, "/contactdb/recipients", recipientIDs, nil)
 }
 
-type recipientListResponse struct {
+type listRecipientsResponse struct {
 	Recipients []*Recipient `json:"recipients"`
 }
 
@@ -124,7 +124,7 @@ type recipientListResponse struct {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#List-Recipients-GET
 func (c *RecipientClient) List(page int, pageSize int) ([]*Recipient, error) {
-	var recipients recipientListResponse
+	var recipients listRecipientsResponse
 
 	err := c.makeRequest(http.MethodGet, fmt.Sprintf("/contactdb/recipients?page=%d&page_size=%d", page, pageSize), nil, &recipients)
 
@@ -208,7 +208,7 @@ type recipientSearch struct {
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Search-with-conditions-POST
 func (c *RecipientClient) SearchListWithConditions(listID int, conditions ...Condition) ([]*Recipient, error) {
-	var recipients recipientListResponse
+	var recipients listRecipientsResponse
 
 	err := c.makeRequest(http.MethodGet, "/contactdb/recipients/search", recipientSearch{ListID: listID, Conditions: conditions}, &recipients)
 
@@ -242,7 +242,7 @@ func (c *RecipientClient) Search(criteria ...SearchTerm) ([]*Recipient, error) {
 
 	u.RawQuery = q.Encode()
 
-	var recipients recipientListResponse
+	var recipients listRecipientsResponse
 
 	err = c.makeRequest(http.MethodGet, u.String(), nil, &recipients)
 
