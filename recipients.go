@@ -46,6 +46,7 @@ type RecipientClient struct {
 	*Client
 }
 
+// RecipientResponse is a response from operations dealing with Recipients
 type RecipientResponse struct {
 	ErrorCount          int      `json:"error_count"`
 	ErrorIndices        []int    `json:"error_indices"`
