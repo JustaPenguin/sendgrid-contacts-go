@@ -1,36 +1,14 @@
 package contacts
 
 import (
-	"net/http"
-	"os"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"go.uber.org/ratelimit"
 )
-
-var recipientClient *RecipientClient
-
-func init() {
-	recipientClient = New(os.Getenv("SENDGRID_APIKEY")).Recipients()
-	recipientClient.HTTPClient = &http.Client{
-		Transport: &RateLimitingTransport{},
-	}
-}
-
-type RateLimitingTransport struct{}
-
-var rateLimiter = ratelimit.New(1)
-
-func (x *RateLimitingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	rateLimiter.Take()
-
-	return http.DefaultTransport.RoundTrip(r)
-}
 
 func TestRecipientClient_Add(t *testing.T) {
 	t.Run("One recipient", func(t *testing.T) {
-		resp, err := recipientClient.Add(&Recipient{FirstName: "John", LastName: "Doe", Email: "john.doe@example.com"})
+		resp, err := client.Recipients().Add(&Recipient{FirstName: "John", LastName: "Doe", Email: "john.doe@example.com"})
 
 		if err != nil {
 			t.Error(err)
@@ -42,7 +20,7 @@ func TestRecipientClient_Add(t *testing.T) {
 		}
 
 		/*t.Run("With custom fields", func(t *testing.T) {
-			resp, err := recipientClient.Add(Recipient{FirstName: "John", LastName: "Doe", Email: "john.doe@example.com", CustomFields: []CustomField{
+			resp, err := client.Recipients().Add(Recipient{FirstName: "John", LastName: "Doe", Email: "john.doe@example.com", CustomFields: []CustomField{
 				{
 					Name:  "favourite_beer",
 					Value: "Budweiser",
@@ -61,7 +39,7 @@ func TestRecipientClient_Add(t *testing.T) {
 	})
 
 	t.Run("Multiple recipients", func(t *testing.T) {
-		resp, err := recipientClient.Add(
+		resp, err := client.Recipients().Add(
 			&Recipient{FirstName: "John", LastName: "Doe", Email: "john.doe@example.com"},
 			&Recipient{FirstName: "Jane", LastName: "Doe", Email: "jane.doe@example.com"},
 			&Recipient{FirstName: "Tim", LastName: "Smith", Email: "tim.smith@example.me"},
@@ -82,7 +60,7 @@ func TestRecipientClient_Add(t *testing.T) {
 func TestRecipientClient_Update(t *testing.T) {
 	r := &Recipient{FirstName: "Update", LastName: "Test", Email: "jimmy.smith@example.com"}
 
-	_, err := recipientClient.Add(r)
+	_, err := client.Recipients().Add(r)
 
 	if err != nil {
 		t.Error(err)
@@ -90,7 +68,7 @@ func TestRecipientClient_Update(t *testing.T) {
 
 	r.Email = "jimothy.smith@example.com"
 
-	resp, err := recipientClient.Update(r)
+	resp, err := client.Recipients().Update(r)
 
 	if err != nil {
 		t.Error(err)
@@ -104,13 +82,13 @@ func TestRecipientClient_Update(t *testing.T) {
 func TestRecipientClient_Delete(t *testing.T) {
 	r := &Recipient{FirstName: "Delete", LastName: "Test", Email: "delete.test@example.com"}
 
-	_, err := recipientClient.Add(r)
+	_, err := client.Recipients().Add(r)
 
 	if err != nil {
 		t.Error(err)
 	}
 
-	err = recipientClient.Delete([]string{r.ID})
+	err = client.Recipients().Delete([]string{r.ID})
 
 	if err != nil {
 		t.Error(err)
@@ -118,7 +96,7 @@ func TestRecipientClient_Delete(t *testing.T) {
 }
 
 func TestRecipientClient_List(t *testing.T) {
-	recipients, err := recipientClient.List(1, 100)
+	recipients, err := client.Recipients().List(1, 100)
 
 	if err != nil {
 		t.Error(err)
@@ -132,13 +110,13 @@ func TestRecipientClient_List(t *testing.T) {
 func TestRecipientClient_Get(t *testing.T) {
 	r := &Recipient{FirstName: "Get", LastName: "Test", Email: "get.test@example.com"}
 
-	_, err := recipientClient.Add(r)
+	_, err := client.Recipients().Add(r)
 
 	if err != nil {
 		t.Error(err)
 	}
 
-	got, err := recipientClient.Get(r.ID)
+	got, err := client.Recipients().Get(r.ID)
 
 	if err != nil {
 		t.Error(err)
@@ -148,7 +126,7 @@ func TestRecipientClient_Get(t *testing.T) {
 		t.Fail()
 	}
 
-	err = recipientClient.Delete([]string{r.ID})
+	err = client.Recipients().Delete([]string{r.ID})
 
 	if err != nil {
 		t.Error(err)
@@ -160,7 +138,7 @@ func TestRecipientClient_ListsForRecipient(t *testing.T) {
 }
 
 func TestRecipientClient_BillableCount(t *testing.T) {
-	billableCount, err := recipientClient.BillableCount()
+	billableCount, err := client.Recipients().BillableCount()
 
 	if err != nil {
 		t.Error(err)
@@ -172,7 +150,7 @@ func TestRecipientClient_BillableCount(t *testing.T) {
 }
 
 func TestRecipientClient_Count(t *testing.T) {
-	count, err := recipientClient.Count()
+	count, err := client.Recipients().Count()
 
 	if err != nil {
 		t.Error(err)
@@ -188,7 +166,7 @@ func TestRecipientClient_SearchListWithConditions(t *testing.T) {
 }
 
 func TestRecipientClient_Search(t *testing.T) {
-	recipients, err := recipientClient.Search(SearchTerm{FieldName: "email", FieldValue: "example.com"})
+	recipients, err := client.Recipients().Search(SearchTerm{FieldName: "email", FieldValue: "example.com"})
 
 	if err != nil {
 		t.Error(err)
@@ -197,6 +175,4 @@ func TestRecipientClient_Search(t *testing.T) {
 	if len(recipients) == 0 {
 		t.Fail()
 	}
-
-	spew.Dump(recipients)
 }

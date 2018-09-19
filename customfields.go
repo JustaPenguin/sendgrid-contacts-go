@@ -76,7 +76,7 @@ type reservedFieldsResponse struct {
 func (c *CustomFieldsClient) ReservedFields() ([]*CustomField, error) {
 	var resp *reservedFieldsResponse
 
-	err := c.makeRequest(http.MethodGet, "/contactdb/reserved_fields", nil, nil)
+	err := c.makeRequest(http.MethodGet, "/contactdb/reserved_fields", nil, &resp)
 
 	if err != nil {
 		return nil, err
