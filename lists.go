@@ -54,7 +54,7 @@ func (c *ListsClient) List() ([]*List, error) {
 // Delete multiple Lists
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Delete-Multiple-lists-DELETE
-func (c *ListsClient) Delete(listIDs []uint) error {
+func (c *ListsClient) Delete(listIDs ...uint) error {
 	return c.client.makeRequest(http.MethodDelete, "/contactdb/lists", listIDs, nil)
 }
 
@@ -98,20 +98,20 @@ func (c *ListsClient) ListRecipients(listID, pageSize, pageNum uint) ([]*Recipie
 // AddRecipients to a List
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Add-Multiple-Recipients-to-a-List-POST
-func (c *ListsClient) AddRecipients(listID uint, recipients []*Recipient) error {
+func (c *ListsClient) AddRecipients(listID uint, recipients ...*Recipient) error {
 	var recipientIDs []string
 
 	for _, recipient := range recipients {
 		recipientIDs = append(recipientIDs, recipient.ID)
 	}
 
-	return c.AddRecipientsByIDs(listID, recipientIDs)
+	return c.AddRecipientsByIDs(listID, recipientIDs...)
 }
 
 // AddRecipientsByIDs to a List
 //
 // https://sendgrid.com/docs/API_Reference/Web_API_v3/Marketing_Campaigns/contactdb.html#Add-Multiple-Recipients-to-a-List-POST
-func (c *ListsClient) AddRecipientsByIDs(listID uint, recipientIDs []string) error {
+func (c *ListsClient) AddRecipientsByIDs(listID uint, recipientIDs ...string) error {
 	return c.client.makeRequest(http.MethodPost, fmt.Sprintf("/contactdb/lists/%d/recipients", listID), recipientIDs, nil)
 }
 

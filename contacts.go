@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -61,7 +62,13 @@ func (c *Client) makeRequest(method, url string, data, output interface{}) error
 
 		return err
 	} else if resp.StatusCode >= http.StatusBadRequest {
-		return fmt.Errorf("contacts: bad status code observed: %d", resp.StatusCode)
+		b, err := ioutil.ReadAll(resp.Body)
+
+		if err != nil {
+			return fmt.Errorf("contacts: bad status code observed: %d", resp.StatusCode)
+		} else {
+			return fmt.Errorf("contacts: bad status code observed: %d, body: %s", resp.StatusCode, string(b))
+		}
 	}
 
 	return nil
