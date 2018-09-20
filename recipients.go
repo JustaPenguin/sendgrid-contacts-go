@@ -1,11 +1,19 @@
 package contacts
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 )
+
+// ToRecipientID converts an email address to a SendGrid recipient ID
+//
+//
+func ToRecipientID(email string) string {
+	return base64.StdEncoding.EncodeToString([]byte(email))
+}
 
 // Recipient is a Contact added to the SendGrid API.
 type Recipient struct {

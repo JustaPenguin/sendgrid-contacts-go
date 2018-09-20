@@ -6,6 +6,14 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+func TestToRecipientID(t *testing.T) {
+	out := ToRecipientID("foo@example.com")
+
+	if out != "Zm9vQGV4YW1wbGUuY29t" {
+		t.Fail()
+	}
+}
+
 func TestRecipientClient_Add(t *testing.T) {
 	t.Run("One recipient", func(t *testing.T) {
 		resp, err := client.Recipients().Add(&Recipient{FirstName: "John", LastName: "Doe", Email: "john.doe@example.com"})
